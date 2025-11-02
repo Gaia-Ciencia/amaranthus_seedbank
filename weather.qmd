@@ -171,7 +171,7 @@ comb_weather1 %>%
  #   date_breaks = "6 months",
     date_labels = "%Y"
   ) +
-  labs(x = "", y="") +
+  labs(x = "", y="Cumulative precipitation (mm)") +
   theme(axis.text.x = element_text(angle = 0),
         strip.text = element_text(size=12, face="bold")) -> fig_wea
 ```
@@ -200,9 +200,9 @@ fig_wea +
             size = 3, color = "white") +
   geom_text_repel(
     data = retriv_1 %>% filter(year == "2021" & run == "1"),
-    mapping = aes(x = date, y = cum_rain, label = round(cum_rain, 0)),
+    mapping = aes(x = date, y = cum_rain, label = glue::glue("{round(cum_rain, 0)} mm")),
     direction = "y",         # constrain movement vertically
-    nudge_y = -800,           # push labels downward (adjust as needed)
+    nudge_y = -900,           # push labels downward (adjust as needed)
     box.padding = 0.7,
     color = "#FFA500",
     max.overlaps = 10,
@@ -212,7 +212,7 @@ fig_wea +
 ) +
   geom_text_repel(
     data = retriv_1 %>% filter(year == "2021" & run == "2"),
-    mapping = aes(x = date, y = cum_rain, label = round(cum_rain_filtered, 0)),
+    mapping = aes(x = date, y = cum_rain, label = glue::glue("{round(cum_rain, 0)} mm")),
     direction = "y",         # constrain movement vertically
     nudge_y = 500,           # push labels downward (adjust as needed)
     box.padding = 0.7,
@@ -240,36 +240,23 @@ fig_wea1 +
                           label = "Onset of second run"),
             size = 3, hjust=0, color="#4682B4") +
   geom_text(comb_weather1 %>% filter(location == "Corpus Christi"),
-            mapping = aes(x = as.Date("2020-01-15"), y = 6000, 
-                          label = "Cumulative rainfall"),
+            mapping = aes(x = as.Date("2020-04-15"), y = 6000), 
+                          label = "Cumulative rainfall",
             size = 3, hjust=0, color = "#4682B4") +
   geom_text(comb_weather1 %>% filter(location == "Corpus Christi"),
-            mapping = aes(x = as.Date("2021-04-15"), y = 2700, 
-                          label = "Cumulative \nrainfall"),
+            mapping = aes(x = as.Date("2021-02-15"), y = 2700, 
+                          label = "Cumulative rainfall"),
             size = 3, color = "#FFA500") +
   geom_text(comb_weather1 %>% filter(location == "Lubbock"),
             mapping = aes(x = as.Date("2016-01-1"), y = 4500, 
                           label = "Numbers inside the dots indicate seed retrieval \ntimes (in months) for each run"),
-            size = 3, hjust=0, color = "#333333") fig_wea2
+            size = 3, hjust=0, color = "#333333") -> fig_wea2
             
             
             
   ggsave("figures/prec.png", width = 12, height = 4.5)
 ```
 
-
-```{r}
-annotate("segment", x = as.Date("2016-04-01"), xend = as.Date("2016-04-01"), y = 0, yend = 4000,
-  colour = "blue", linetype="dotted") +
-  annotate("segment", x = as.Date("2016-10-01"), xend = as.Date("2016-10-01"), y = 0, yend = 4000,
-  colour = "lightblue", linetype="dotted") +
-  geom_text(data=comb_weather1 %>% filter(location=="College Station"),
-            mapping=aes(x=as.Date("2021-09-20"), y=7000),
-            label= "6726 mm", size=3, hjust=1) 
-
-
-
-```
 
 
 
@@ -289,7 +276,7 @@ comb_weather1 %>%
  #   date_breaks = "6 months",
     date_labels = "%Y"
   ) +
-  labs(x="", y="") +
+  labs(x="", y = expression("Temperature ("*degree*C*")")) +
   theme(axis.text.x = element_text(angle = 0),
         strip.text = element_text(size=12, face="bold")) -> fig_temp
 ```
@@ -308,13 +295,13 @@ comb_weather1 %>%
 ```{r}
 fig_temp +
   geom_text(data = avgs1, mapping = aes(x=date, y = 45, 
-                                        label = glue::glue("Mean maximum temperature: {max_mean} C")), 
+                                        label = glue::glue("Mean maximum temperature: {max_mean}\u00B0C")), 
                                         size = 3, color = "red"
             ) +
   geom_text(data = avgs1, mapping = aes(x=date, y = -12, 
-                                        label = glue::glue("Mean minimum temperature: {min_mean} C")), 
+                                        label = glue::glue("Mean minimum temperature: {max_mean}\u00B0C")),
                                         size = 3, color = "blue"
-            )
+            ) +
   
   
   theme(legend.position = "none") -> fig_temp1
@@ -326,7 +313,11 @@ ggsave("figures/temp.png", width = 12, height = 4.5)
 
 
 ```{r}
-ggsave("figures/temp.png", width = 12, height = 4.5)
+(fig_wea2 / fig_temp1) +
+  plot_annotation(tag_levels = "A")
+
+
+ggsave("figures/weather.png", width = 12, height = 9)
 ```
 
 

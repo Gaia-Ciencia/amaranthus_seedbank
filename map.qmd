@@ -34,6 +34,11 @@ class(world)
 ```
 
 
+Amarillo-Acuff-Olton = Lubbock
+Victoria-Orelia-Edroy - Corpus Christi 
+Edge-Tabor-Silstid - College Station
+
+
 ```{r}
 (sites <- tribble(
   ~location, ~latitude, ~longitude,
@@ -112,7 +117,7 @@ head(counties)
 ggplot(data = world) +
   geom_sf() +
   geom_sf(data = states, fill = NA, color = "grey80") + 
-  geom_sf(data = states, fill = NA) + 
+#  geom_sf(data = states, fill = NA) + 
   geom_sf(data = counties, fill = "#FAF9F6", color = gray(.8)) +
   coord_sf(xlim = c(-107, -93.2), ylim = c(37, 25.5), expand = FALSE) +
   geom_point(data = sites, aes(x = longitude, y = latitude), size = 4, 
@@ -154,7 +159,28 @@ ggsave("figures/map.png", width = 5, height = 5)
 
 
 
+```{r}
+ggplot(data = world) +
+  geom_sf() +
+  geom_sf(data = counties, fill = "#FAF9F6", color = gray(.8)) +
+  coord_sf(xlim = c(-107, -93.2), ylim = c(37, 25.5), expand = FALSE) +
+  geom_point(data = sites, aes(x = longitude, y = latitude), size = 4, 
+        shape = c(22,21,23),  fill = c("purple",2,3)) +
+  geom_text(data = sites, aes(x = longitude, y = latitude, label = location),
+              nudge_y = -0.5, color = "#333333", fontface = "italic") +
+  labs(x = NULL, y = NULL) +
+  annotation_scale(location = "bl", width_hint = 0.25) +
+  annotation_north_arrow(location = "tr", which_north = "true", 
+        pad_x = unit(0.1, "in"), pad_y = unit(0.1, "in"),
+        style = north_arrow_nautical) +
+  theme(panel.background = element_rect(fill = "aliceblue"))
+  
 
+    
+    
+
+ggsave("figures/map.png", width = 6, height = 6)
+```
 
 
 

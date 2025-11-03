@@ -299,7 +299,7 @@ fig_temp +
                                         size = 3, color = "red"
             ) +
   geom_text(data = avgs1, mapping = aes(x=date, y = -12, 
-                                        label = glue::glue("Mean minimum temperature: {max_mean}\u00B0C")),
+                                        label = glue::glue("Mean minimum temperature: {min_mean}\u00B0C")),
                                         size = 3, color = "blue"
             ) +
   

@@ -17,8 +17,6 @@ library(reshape2)
 set.seed(2912) # Use the same number for all models
 ```
 
-
-
 ```{r}
 priors <- c(
   prior(normal(1, 1), nlpar = "upper"),
@@ -455,7 +453,7 @@ et_by_group_all
 
 ```{r}
 et_by_group_all %>% 
-  filter(ET_target == "ET1") 
+  filter(ET_target == "ET50") 
 ```
 
 ```{r}

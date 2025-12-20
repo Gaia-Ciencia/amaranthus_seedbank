@@ -606,7 +606,7 @@ et_by_group_all |>
     axis.text = element_text(size = 11),
     axis.title = element_text(size = 12),
     legend.position = "none"
-  ) -> fig_et_80
+  ) -> fig_et_80_1
 
 ggsave("figures/et80_point.png", width = 6, height = 5)
 ```
@@ -642,6 +642,49 @@ ggsave("figures/et50_violin_plot.png", width = 6, height = 5)
 ```
 
 ```{r}
+# using unique point and line range
+et_by_group_all |> 
+  filter(ET_target == "ET50") |> 
+  mutate(population = case_when(
+  species == "Palmer amaranth" & location == "Lubbock" ~ "PA-LBK",
+  species == "Palmer amaranth" & location == "College Station" ~ "PA-CS",
+  species == "Palmer amaranth" & location == "Corpus Christi" ~ "PA-CC",
+  species == "waterhemp" & location == "Lubbock" ~ "WH-LBK",
+  species == "waterhemp" & location == "College Station" ~ "WH-CS",
+  species == "waterhemp" & location == "Corpus Christi" ~ "WH-CC"
+  )) |> 
+  mutate(group = factor(population, levels = c("PA-CC", "PA-CS", "PA-LBK", "WH-CC", "WH-CS", "WH-LBK"))) %>%
+  ggplot(aes(x = reorder(group, median_ET), y = median_ET, color = group)) +
+  geom_point(size=3) +
+  geom_linerange(aes(ymin = lower_CI, ymax = upper_CI), size=1.2) +
+  geom_text(aes(label=round(median_ET,1)),
+            vjust=-1.1
+            ) +
+  coord_flip() +
+  labs(
+    x = NULL,
+    y = "Months after burial for 80% seed viability (ET80)"
+  ) +
+  theme_foundation() +
+  scale_color_manual(values = pop_colors) +
+  scale_fill_manual(values = pop_colors) +
+  scale_y_continuous(limits = c(0, 10), breaks = seq(0, 10, 2)) +
+  theme(
+    axis.text = element_text(size = 11),
+    axis.title = element_text(size = 12),
+    legend.position = "none"
+  ) -> fig_et_50_1
+
+ggsave("figures/et50_point.png", width = 6, height = 5)
+```
+
+
+
+
+
+
+
+```{r}
 et_draws_long1 %>% 
   filter(ET_target == "ET1") %>%
   mutate(group = factor(population, levels = c("PA-CC", "PA-CS", "PA-LBK", "WH-CC", "WH-CS", "WH-LBK"))) %>%
@@ -667,7 +710,42 @@ ggsave("figures/et1_violin_plot.png", width = 6, height = 5)
 ```
 
 
+```{r}
+# using unique point and line range
+et_by_group_all |> 
+  filter(ET_target == "ET1") |> 
+  mutate(population = case_when(
+  species == "Palmer amaranth" & location == "Lubbock" ~ "PA-LBK",
+  species == "Palmer amaranth" & location == "College Station" ~ "PA-CS",
+  species == "Palmer amaranth" & location == "Corpus Christi" ~ "PA-CC",
+  species == "waterhemp" & location == "Lubbock" ~ "WH-LBK",
+  species == "waterhemp" & location == "College Station" ~ "WH-CS",
+  species == "waterhemp" & location == "Corpus Christi" ~ "WH-CC"
+  )) |> 
+  mutate(group = factor(population, levels = c("PA-CC", "PA-CS", "PA-LBK", "WH-CC", "WH-CS", "WH-LBK"))) %>%
+  ggplot(aes(x = reorder(group, median_ET), y = median_ET, color = group)) +
+  geom_point(size=3) +
+  geom_linerange(aes(ymin = lower_CI, ymax = upper_CI), size=1.2) +
+  geom_text(aes(label=round(median_ET,1)),
+            vjust=-1.1
+            ) +
+  coord_flip() +
+  labs(
+    x = NULL,
+    y = "Months after burial for 80% seed viability (ET80)"
+  ) +
+  theme_foundation() +
+  scale_color_manual(values = pop_colors) +
+  scale_fill_manual(values = pop_colors) +
+  scale_y_continuous(limits = c(0, 50), breaks = seq(0, 50, 10)) +
+  theme(
+    axis.text = element_text(size = 11),
+    axis.title = element_text(size = 12),
+    legend.position = "none"
+  ) -> fig_et_1_1
 
+ggsave("figures/et1_point.png", width = 6, height = 5)
+```
 
 
 
@@ -720,7 +798,11 @@ heatmap_data80 <- melt(pairwise_probs80, varnames = c("Group1", "Group2"), value
 
 ```{r}
 # --- Create heatmap plot ---
-ggplot(heatmap_data80, aes(x = Group2, y = Group1)) +
+heatmap_data80 |> 
+  mutate(Group1= factor(Group1, levels=c("WH-CC", "PA-CS", "WH-CS", "PA-CC", "WH-LBK", "PA-LBK")),
+         Group2 = factor(Group2, levels=c("PA-LBK", "WH-LBK", "PA-CC", "WH-CS", "PA-CS", "WH-CC"))
+         ) |> 
+  ggplot(aes(x = Group2, y = Group1)) +
   geom_point(aes(color = Pr_G1_gt_G2, size = Pr_G1_gt_G2), shape = 16) +
   scale_color_gradient2(
     low = "#d73027", mid = "white", high = "#1a9850",
@@ -796,7 +878,11 @@ heatmap_data50 <- melt(pairwise_probs50, varnames = c("Group1", "Group2"), value
 
 ```{r}
 # --- Create heatmap plot ---
-ggplot(heatmap_data50, aes(x = Group2, y = Group1)) +
+heatmap_data50 |> 
+  mutate(Group1= factor(Group1, levels=c("WH-CC", "WH-CS", "PA-CS", "WH-LBK", "PA-CC", "PA-LBK")),
+         Group2 = factor(Group2, levels=c("PA-LBK", "PA-CC", "WH-LBK", "PA-CS", "WH-CS",  "WH-CC"))
+         ) |> 
+ggplot(aes(x = Group2, y = Group1)) +
   geom_point(aes(color = Pr_G1_gt_G2, size = Pr_G1_gt_G2), shape = 16) +
   scale_color_gradient2(
     low = "#d73027", mid = "white", high = "#1a9850",
@@ -917,3 +1003,20 @@ final_plot <- (col1 | col2 | col3) +
 # Save the plot
 ggsave("figures/Final_figure.png", plot = final_plot, width = 16.5, height = 10)
 ```
+
+```{r}
+# Create individual columns
+col1 <- fig_et_80_1 / fig_et_80_pair
+col2 <- fig_et_50_1 / fig_et_50_pair
+col3 <- fig_et_1_1 / fig_et_1_pair
+
+# Combine columns side by side and apply annotation
+final_plot <- (col1 | col2 | col3) +
+  plot_annotation(tag_levels = "A")
+
+# Save the plot
+ggsave("figures/Final_figure_1.png", plot = final_plot, width = 16.5, height = 10)
+```
+
+
+

@@ -663,7 +663,7 @@ et_by_group_all |>
   coord_flip() +
   labs(
     x = NULL,
-    y = "Months after burial for 80% seed viability (ET80)"
+    y = "Months after burial for 50% seed viability (ET50)"
   ) +
   theme_foundation() +
   scale_color_manual(values = pop_colors) +
@@ -732,7 +732,7 @@ et_by_group_all |>
   coord_flip() +
   labs(
     x = NULL,
-    y = "Months after burial for 80% seed viability (ET80)"
+    y = "Months after burial for 80% seed viability (ET1)"
   ) +
   theme_foundation() +
   scale_color_manual(values = pop_colors) +
@@ -822,8 +822,8 @@ heatmap_data80 |>
     axis.title = element_text(size = 12),
   ) +
   labs(
-    x = "Treatment compared against (ET50)",
-    y = "Treatment being evaluated (ET50)"
+    x = "Treatment compared against (ET80)",
+    y = "Treatment being evaluated (ET80)"
   ) -> fig_et_80_pair
 
 ggsave("figures/et80_pairwise_heatmap.png", width = 7, height = 6)
@@ -958,7 +958,10 @@ heatmap_data1 <- melt(pairwise_probs1, varnames = c("Group1", "Group2"), value.n
 
 ```{r}
 # --- Create heatmap plot ---
-heatmap_data1 %>% 
+heatmap_data1 |> 
+  mutate(Group1= factor(Group1, levels=c( "WH-LBK", "PA-LBK", "WH-CS", "WH-CC", "PA-CS", "PA-CC")),
+         Group2 = factor(Group2, levels=c("PA-CC", "PA-CS", "WH-CC", "WH-CS", "PA-LBK", "WH-LBK"))
+         ) |> 
   ggplot(aes(x = Group2, y = Group1)) +
   geom_point(aes(color = Pr_G1_gt_G2, size = Pr_G1_gt_G2), shape = 16) +
   scale_color_gradient2(
@@ -979,8 +982,8 @@ heatmap_data1 %>%
     legend.position = "none",
   ) +
   labs(
-    x = "Treatment compared against (ET50)",
-    y = "Treatment being evaluated (ET50)"
+    x = "Treatment compared against (ET1)",
+    y = "Treatment being evaluated (ET1)"
   ) -> fig_et_1_pair
 
 ggsave("figures/et1_pairwise_heatmap.png", width = 7, height = 6)

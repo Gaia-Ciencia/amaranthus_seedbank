@@ -4,7 +4,6 @@ format: html
 editor: visual
 ---
 
-
 ```{r}
 library(brms)
 library(tidybayes)
@@ -34,11 +33,10 @@ full_model_f <- bf(
 ```
 
 
-
 ```{r}
 full_m_f <- brm(
   formula = full_model_f,
-  data = all_data,
+  data = all_data, # estava all_data e mudei (?)
   prior = priors,
   chains = 4,
   cores = 4,
@@ -48,8 +46,6 @@ full_m_f <- brm(
 )
 ```
 
-
-
 ```{r}
 simple_model_f <- bf(
   viability_prop ~ upper / (1 + exp(-slope * (retrieval_time_months - t50))),
@@ -57,7 +53,6 @@ simple_model_f <- bf(
   nl = TRUE
 )
 ```
-
 
 ```{r}
 simple_m_f  <- brm(
@@ -72,25 +67,17 @@ simple_m_f  <- brm(
 )
 ```
 
-
-
-
-
 ```{r}
 loo_full_f <- add_criterion(full_m_f, "loo", moment_match = TRUE)
 loo_simple_f <- add_criterion(simple_m_f, "loo", moment_match = TRUE)
 
-loo_compare(loo_full_f, loo_simple_f$
+loo_compare(loo_full_f, loo_simple_f)
 ```
 
 ```{r}
 loo_full_f$criteria
 loo_simple_f$criteria
 ```
-
-
-
-
 
 ```{r}
 red_model1_f <- bf(
@@ -99,7 +86,6 @@ red_model1_f <- bf(
   nl = TRUE
 )
 ```
-
 
 ```{r}
 red_m1_f  <- brm(
@@ -124,8 +110,6 @@ loo_compare(loo_full_f, loo_red1_f)
 loo_red1_f$criteria
 ```
 
-
-
 ```{r}
 red_model2_f <- bf(
   viability_prop ~ upper / (1 + exp(-slope * (retrieval_time_months - t50))),
@@ -133,7 +117,6 @@ red_model2_f <- bf(
   nl = TRUE
 )
 ```
-
 
 ```{r}
 red_m2_f  <- brm(
@@ -153,11 +136,6 @@ loo_red2_f <- add_criterion(red_m2_f, "loo", moment_match = TRUE)
 
 loo_compare(loo_full_f, loo_red2_f)
 ```
-```{r}
-pp_expect(loo_red2_f)  # from brms
-
-```
-
 
 
 
@@ -168,7 +146,6 @@ red_model3_f <- bf(
   nl = TRUE
 )
 ```
-
 
 ```{r}
 red_m3_f  <- brm(
@@ -193,7 +170,6 @@ loo_compare(loo_red2_f, loo_red3_f)
 loo_red3_f$criteria
 ```
 
-
 ```{r}
 red_model4_f <- bf(
   viability_prop ~ upper / (1 + exp(-slope * (retrieval_time_months - t50))),
@@ -201,7 +177,6 @@ red_model4_f <- bf(
   nl = TRUE
 )
 ```
-
 
 ```{r}
 red_m4_f  <- brm(
@@ -222,7 +197,6 @@ loo_red4_f <- add_criterion(red_m4_f, "loo", moment_match = TRUE)
 loo_compare(loo_red2_f, loo_red4_f)
 ```
 
-
 ```{r}
 loo_red3_f$criteria
 ```
@@ -230,7 +204,6 @@ loo_red3_f$criteria
 ```{r}
 summary(red_m2_f)
 ```
-
 
 ```{r}
 new_data <- expand.grid(
@@ -245,7 +218,6 @@ new_data$predicted <- preds[, "Estimate"]
 new_data$lower_CI <- preds[, "Q2.5"]
 new_data$upper_CI <- preds[, "Q97.5"]
 ```
-
 
 ```{r}
 new_data %>% 
@@ -275,7 +247,6 @@ pop_colors <- c(
   "WH-CC"  = "#A65628"
 )
 ```
-
 
 ```{r}
 new_data1 %>% 
@@ -339,7 +310,6 @@ new_data1 %>%
 ggsave("figures/seed_viability_2.png", width=6, height=6)
 ```
 
-
 ```{r}
 fig_viab +
   geom_text(aes(x = 50, y = 100),
@@ -352,20 +322,15 @@ fig_viab +
 ggsave("figures/seed_viability_2.png", width=6, height=6)
 ```
 
-
-
-
 ```{r}
 unique(all_data$population)
 ```
-
 
 ```{r}
 # Extract all posterior draws
 posterior_draws <- as_draws_df(red_m2_f)
 names(posterior_draws)
 ```
-
 
 ```{r}
 get_param_for_group <- function(draws_df, param, species, location) {
@@ -407,14 +372,12 @@ get_param_for_group <- function(draws_df, param, species, location) {
 }
 ```
 
-
 ```{r}
 # --- 3. Prepare species × location combinations ---
 group_levels <- all_data %>%
   distinct(species, location) %>%
   arrange(species, location)
 ```
-
 
 ```{r}
 # --- 4. Set ET targets ---
@@ -478,7 +441,6 @@ fig_viab +
   geom_hline(yintercept = 80)
 ```
 
-
 ```{r}
 # --- 1. Choose species × location combinations to compare ---
 # Example: compare Palmer amaranth at Lubbock vs College Station
@@ -491,7 +453,6 @@ location_b <- "CollegeStation"   # Use the same naming as in your model terms
 # Choose which ET target to compare ("ET1", "ET20", "ET50", "ET80")
 ET_to_compare <- "ET50"
 ```
-
 
 ```{r}
 # --- 2. Helper function to compute ET draws for a given species × location ---
@@ -562,7 +523,6 @@ et_draws_long <- all_data %>%
   })
 ```
 
-
 ```{r}
 et_draws_long %>%
   group_by(species, location, ET_target) %>% 
@@ -588,7 +548,6 @@ et_draws_long %>%
   ) -> et_draws_long1
 ```
 
-
 ```{r}
 et_draws_long1 %>% 
   filter(ET_target == "ET80") %>%
@@ -613,6 +572,46 @@ et_draws_long1 %>%
 
 ggsave("figures/et80_violin_plot.png", width = 6, height = 5)
 ```
+
+
+```{r}
+# using unique point and line range
+et_by_group_all |> 
+  filter(ET_target == "ET80") |> 
+  mutate(population = case_when(
+  species == "Palmer amaranth" & location == "Lubbock" ~ "PA-LBK",
+  species == "Palmer amaranth" & location == "College Station" ~ "PA-CS",
+  species == "Palmer amaranth" & location == "Corpus Christi" ~ "PA-CC",
+  species == "waterhemp" & location == "Lubbock" ~ "WH-LBK",
+  species == "waterhemp" & location == "College Station" ~ "WH-CS",
+  species == "waterhemp" & location == "Corpus Christi" ~ "WH-CC"
+  )) |> 
+  mutate(group = factor(population, levels = c("PA-CC", "PA-CS", "PA-LBK", "WH-CC", "WH-CS", "WH-LBK"))) %>%
+  ggplot(aes(x = reorder(group, median_ET), y = median_ET, color = group)) +
+  geom_point(size=3) +
+  geom_linerange(aes(ymin = lower_CI, ymax = upper_CI), size=1.2) +
+  geom_text(aes(label=round(median_ET,1)),
+            vjust=-1.1
+            ) +
+  coord_flip() +
+  labs(
+    x = NULL,
+    y = "Months after burial for 80% seed viability (ET80)"
+  ) +
+  theme_foundation() +
+  scale_color_manual(values = pop_colors) +
+  scale_fill_manual(values = pop_colors) +
+  scale_y_continuous(limits = c(0, 8), breaks = seq(0, 10, 2)) +
+  theme(
+    axis.text = element_text(size = 11),
+    axis.title = element_text(size = 12),
+    legend.position = "none"
+  ) -> fig_et_80
+
+ggsave("figures/et80_point.png", width = 6, height = 5)
+```
+
+
 
 
 
@@ -642,10 +641,6 @@ ggsave("figures/et50_violin_plot.png", width = 6, height = 5)
 
 ```
 
-
-
-
-
 ```{r}
 et_draws_long1 %>% 
   filter(ET_target == "ET1") %>%
@@ -671,6 +666,11 @@ et_draws_long1 %>%
 ggsave("figures/et1_violin_plot.png", width = 6, height = 5)
 ```
 
+
+
+
+
+
 80% pairwise comparison heatmap
 
 ```{r}
@@ -681,7 +681,6 @@ et80_wide <- et_draws_long1 %>%
   dplyr::select(group, ET_value)
 ```
 
-
 ```{r}
 # --- Nest by group and pivot to wide matrix ---
 et80_matrix <- et80_wide %>%
@@ -691,7 +690,6 @@ et80_matrix <- et80_wide %>%
   unnest(cols = everything()) %>%
   as.data.frame()
 ```
-
 
 ```{r}
 # --- Compute pairwise probabilities ---
@@ -715,12 +713,10 @@ for (i in seq_along(group_ids80)) {
 }
 ```
 
-
 ```{r}
 # --- Convert to long format for plotting ---
 heatmap_data80 <- melt(pairwise_probs80, varnames = c("Group1", "Group2"), value.name = "Pr_G1_gt_G2")
 ```
-
 
 ```{r}
 # --- Create heatmap plot ---
@@ -751,9 +747,6 @@ ggplot(heatmap_data80, aes(x = Group2, y = Group1)) +
 ggsave("figures/et80_pairwise_heatmap.png", width = 7, height = 6)
 ```
 
-
-
-
 50% pairwise comparison heatmap
 
 ```{r}
@@ -764,7 +757,6 @@ et50_wide <- et_draws_long1 %>%
   dplyr::select(group, ET_value)
 ```
 
-
 ```{r}
 # --- Nest by group and pivot to wide matrix ---
 et50_matrix <- et50_wide %>%
@@ -774,7 +766,6 @@ et50_matrix <- et50_wide %>%
   unnest(cols = everything()) %>%
   as.data.frame()
 ```
-
 
 ```{r}
 # --- Compute pairwise probabilities ---
@@ -798,12 +789,10 @@ for (i in seq_along(group_ids50)) {
 }
 ```
 
-
 ```{r}
 # --- Convert to long format for plotting ---
 heatmap_data50 <- melt(pairwise_probs50, varnames = c("Group1", "Group2"), value.name = "Pr_G1_gt_G2")
 ```
-
 
 ```{r}
 # --- Create heatmap plot ---
@@ -834,11 +823,6 @@ ggplot(heatmap_data50, aes(x = Group2, y = Group1)) +
 ggsave("figures/et50_pairwise_heatmap.png", width = 7, height = 6)
 ```
 
-
-
-
-
-
 1% pairwise comparison heatmap
 
 ```{r}
@@ -849,7 +833,6 @@ et1_wide <- et_draws_long1 %>%
   dplyr::select(group, ET_value)
 ```
 
-
 ```{r}
 # --- Nest by group and pivot to wide matrix ---
 et1_matrix <- et1_wide %>%
@@ -859,7 +842,6 @@ et1_matrix <- et1_wide %>%
   unnest(cols = everything()) %>%
   as.data.frame()
 ```
-
 
 ```{r}
 # --- Compute pairwise probabilities ---
@@ -883,12 +865,10 @@ for (i in seq_along(group_ids1)) {
 }
 ```
 
-
 ```{r}
 # --- Convert to long format for plotting ---
 heatmap_data1 <- melt(pairwise_probs1, varnames = c("Group1", "Group2"), value.name = "Pr_G1_gt_G2")
 ```
-
 
 ```{r}
 # --- Create heatmap plot ---
@@ -920,16 +900,9 @@ heatmap_data1 %>%
 ggsave("figures/et1_pairwise_heatmap.png", width = 7, height = 6)
 ```
 
-
-
-
 ```{r}
 library(patchwork)
 ```
-
-
-
-
 
 ```{r}
 # Create individual columns
@@ -944,21 +917,3 @@ final_plot <- (col1 | col2 | col3) +
 # Save the plot
 ggsave("figures/Final_figure.png", plot = final_plot, width = 16.5, height = 10)
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

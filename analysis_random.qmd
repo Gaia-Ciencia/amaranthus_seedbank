@@ -9,10 +9,6 @@ library(brms)
 library(loo)
 ```
 
-
-
-
-
 ```{r}
 priors <- c(
   prior(normal(1, 1), nlpar = "upper"),
@@ -41,7 +37,6 @@ full_m <- brm(
 )
 ```
 
-
 ```{r}
 simple_model <- bf(
   viability_prop ~ upper / (1 + exp(-slope * (retrieval_time_months - t50))),
@@ -49,7 +44,6 @@ simple_model <- bf(
   nl = TRUE
 )
 ```
-
 
 ```{r}
 simple_m  <- brm(
@@ -70,8 +64,6 @@ loo_simple <- add_criterion(simple_m, "loo", moment_match = TRUE)
 loo_compare(loo_full, loo_simple)
 ```
 
-
-
 ```{r}
 red_model1 <- bf(
   viability_prop ~ upper / (1 + exp(-slope * (retrieval_time_months - t50))),
@@ -79,7 +71,6 @@ red_model1 <- bf(
   nl = TRUE
 )
 ```
-
 
 ```{r}
 red_m1  <- brm(
@@ -107,7 +98,6 @@ red_model2 <- bf(
 )
 ```
 
-
 ```{r}
 red_m2  <- brm(
   formula = red_model2,
@@ -126,7 +116,6 @@ loo_red2 <- add_criterion(red_m2, "loo", moment_match = TRUE)
 loo_compare(loo_full, loo_red2)
 ```
 
-
 ```{r}
 red_model3 <- bf(
   viability_prop ~ upper / (1 + exp(-slope * (retrieval_time_months - t50))),
@@ -134,7 +123,6 @@ red_model3 <- bf(
   nl = TRUE
 )
 ```
-
 
 ```{r}
 red_m3  <- brm(
@@ -148,13 +136,11 @@ red_m3  <- brm(
 )
 ```
 
-
 ```{r}
 loo_red3 <- add_criterion(red_m3, "loo", moment_match = TRUE)
 
 loo_compare(loo_full, loo_red3)
 ```
-
 
 ```{r}
 red_model4 <- bf(
@@ -163,7 +149,6 @@ red_model4 <- bf(
   nl = TRUE
 )
 ```
-
 
 ```{r}
 red_m4  <- brm(
@@ -177,38 +162,25 @@ red_m4  <- brm(
 )
 ```
 
-
 ```{r}
 loo_red4 <- add_criterion(red_m4, "loo", moment_match = TRUE)
 
 loo_compare(loo_full, loo_red4)
 ```
 
-
-
-
-
-
-
-
-
 ```{r}
 summary(loo_full)
 ```
 
-
 ```{r}
 plot(loo_full)
 ```
-
 
 ```{r}
 #| warning: false
 conditional_effects(full_m)
 
 ```
-
-
 
 ```{r}
 new_data <- expand.grid(
@@ -230,7 +202,6 @@ new_data$upper_CI <- preds[, "Q97.5"]
 ```{r}
 summary(full_m)$random$run
 ```
-
 
 ```{r}
 ggplot(new_data, aes(x = retrieval_time_months, y = predicted*100)) +
@@ -254,9 +225,6 @@ ggsave("bayesian_reg.png", width=7, height=10)
 
 ```
 
-
-
-
 ```{r}
 # Extract posterior draws as a data frame
 post <- as_draws_df(full_m)
@@ -273,7 +241,6 @@ groups <- expand.grid(
 )
 ```
 
-
 ```{r}
 safe_col <- function(post, colname) {
   if (colname %in% colnames(post)) {
@@ -283,7 +250,6 @@ safe_col <- function(post, colname) {
   }
 }
 ```
-
 
 ```{r}
 get_param <- function(post, group, param) {
@@ -335,7 +301,6 @@ get_param <- function(post, group, param) {
 
 ```
 
-
 ```{r}
 calc_ED <- function(p, t50, slope) {
   # Only use draws with negative slope
@@ -369,7 +334,6 @@ results <- lapply(1:nrow(groups), function(i) {
 ED90_table <- do.call(rbind, results)
 ```
 
-
 ```{r}
 calc_ED_absolute <- function(y_target, t50, slope, upper) {
   valid <- slope != 0 & upper > y_target & y_target > 0
@@ -382,7 +346,6 @@ calc_ED_absolute <- function(y_target, t50, slope, upper) {
   return(ed)
 }
 ```
-
 
 ```{r}
 results <- lapply(seq_len(nrow(groups)), function(i) {
@@ -434,7 +397,6 @@ ggplot(ED_table, aes(x = depth_cm, y = ED50_mean, color = species)) +
   labs(title = "ED50 across treatments", y = "Months", x = "Burial depth")
 ```
 
-
 ```{r}
 group1 <- groups[1, , drop = TRUE]
 group2 <- groups[2, , drop = TRUE]
@@ -451,18 +413,15 @@ ed50_2 <- calc_ED_absolute(0.5, t50_2, slope_2, upper_2)
 
 ```
 
-
 ```{r}
 ed50_diff <- ed50_1 - ed50_2
 ```
-
 
 ```{r}
 mean_diff <- mean(ed50_diff, na.rm = TRUE)
 ci_diff <- quantile(ed50_diff, c(0.025, 0.975), na.rm = TRUE)
 prob_positive <- mean(ed50_diff > 0, na.rm = TRUE)
 ```
-
 
 ```{r}
 df <- data.frame(
@@ -474,10 +433,3 @@ ggplot(df, aes(x = ed50, fill = group)) +
   geom_density(alpha = 0.5) +
   labs(title = "Posterior distribution of ED50", x = "ED50 (months)")
 ```
-
-
-
-
-
-
-

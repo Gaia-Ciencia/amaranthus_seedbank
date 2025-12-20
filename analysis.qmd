@@ -121,7 +121,7 @@ ggsave("figures/raw_figure.png", width = 12, height = 7)
 #| warning: false
 drm(viable_seed_as_percent_of_original ~ retrieval_time_months, fct = W1.3(),
   curveid = interaction(species, depth_cm), 
-  data= all_data %>% 
+  data = all_data %>% 
     filter(location == "Lubbock")) -> lub_full
 
 ```

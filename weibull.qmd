@@ -32,7 +32,6 @@ full_model_f <- bf(
 )
 ```
 
-
 ```{r}
 full_m_f <- brm(
   formula = full_model_f,
@@ -136,8 +135,6 @@ loo_red2_f <- add_criterion(red_m2_f, "loo", moment_match = TRUE)
 
 loo_compare(loo_full_f, loo_red2_f)
 ```
-
-
 
 ```{r}
 red_model3_f <- bf(
@@ -573,7 +570,6 @@ et_draws_long1 %>%
 ggsave("figures/et80_violin_plot.png", width = 6, height = 5)
 ```
 
-
 ```{r}
 # using unique point and line range
 et_by_group_all |> 
@@ -610,10 +606,6 @@ et_by_group_all |>
 
 ggsave("figures/et80_point.png", width = 6, height = 5)
 ```
-
-
-
-
 
 ```{r}
 et_draws_long1 %>% 
@@ -678,12 +670,6 @@ et_by_group_all |>
 ggsave("figures/et50_point.png", width = 6, height = 5)
 ```
 
-
-
-
-
-
-
 ```{r}
 et_draws_long1 %>% 
   filter(ET_target == "ET1") %>%
@@ -709,7 +695,6 @@ et_draws_long1 %>%
 ggsave("figures/et1_violin_plot.png", width = 6, height = 5)
 ```
 
-
 ```{r}
 # using unique point and line range
 et_by_group_all |> 
@@ -732,7 +717,7 @@ et_by_group_all |>
   coord_flip() +
   labs(
     x = NULL,
-    y = "Months after burial for 80% seed viability (ET1)"
+    y = "Months after burial for 1% seed viability (ET1)"
   ) +
   theme_foundation() +
   scale_color_manual(values = pop_colors) +
@@ -746,8 +731,6 @@ et_by_group_all |>
 
 ggsave("figures/et1_point.png", width = 6, height = 5)
 ```
-
-
 
 80% pairwise comparison heatmap
 
@@ -1020,6 +1003,3 @@ final_plot <- (col1 | col2 | col3) +
 # Save the plot
 ggsave("figures/Final_figure_1.png", plot = final_plot, width = 16.5, height = 10)
 ```
-
-
-
